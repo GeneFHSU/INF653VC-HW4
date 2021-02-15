@@ -1,7 +1,6 @@
 <?php
 require('database.php');
 
-
 /*First check if we are adding or deleting items. Once table updates are complete, return current table.*/
 
 /*Check if we are adding a toDoItem*/
@@ -14,11 +13,11 @@ if(isset($_POST["addToDoItem"]))
     /*Verify that a title and description were provided*/
     $toDoItemValid = true;
     if(is_null($toDoTitle)) {
-        echo "Invalid Title provided.";
+        echo "Error: Invalid Title provided for new toDo Item.\n";
         $toDoItemValid = false;
     }
     if(is_null($toDoDescription)) {
-        echo "Invalid Title provided.";
+        echo "Error: Invalid Description provided for new toDo Item.\n";
         $toDoItemValid = false;
     }
 
@@ -48,7 +47,7 @@ else if(isset($_POST["deleteToDoItem"]))
     /*Sanitize the toDoItem to delete*/
     $deleteItemNum = filter_input(INPUT_POST, "deleteToDoItem",FILTER_SANITIZE_NUMBER_INT);
 
-    /*Delete the toDoItem*/
+    /*Delete the toDoItem from table*/
     $query =    "DELETE FROM todoitems WHERE ItemNum = :itemNum";
     $statement = $db->prepare($query);
     $statement->bindValue(":itemNum",$deleteItemNum);
@@ -81,20 +80,20 @@ $statement->closeCursor();
     <header><h1>ToDo List</h1></header>
     <main>
         <?php if(empty($toDoItems)) { ?>
-            <section>
-                <div>No to do list items exist yet.</div>
+            <section class="Border">
+                <div class="NoToDoItems">No to do list items exist yet.</div>
             </section>
         <?php } else{?>
             <section>
                 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
                 <?php foreach ($toDoItems as $toDoItem) : ?>
-                    <div class="Test flex-container flex-between">
+                    <div class="Border flex-container flex-between">
                         <div class="flex-item">
                             <h5><?=$toDoItem['Title']?></h5>
                             <div class="description"><?=$toDoItem['Description']?></div>
                         </div>
                         <div class="flex-item">
-                            <button class="Delete" type="submit" name="deleteToDoItem" value="<?=$toDoItem['ItemNum']?>">&#x274C;</button>
+                            <button type="submit" name="deleteToDoItem" value="<?=$toDoItem['ItemNum']?>">&#x274C;</button>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -104,13 +103,13 @@ $statement->closeCursor();
         <section>
             <h2>Add Item</h2>
             <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
-                <div class="Test flex-container flex-between">
+                <div class="Border flex-container flex-between">
                     <div class="flex-item" style="width: 100%">
-                        <input type="text" placeholder="Title" name="title" maxlength="20" required style="width:100%; font-size: 1.5rem;">
-                        <input type="text" placeholder="Description" name="desc" maxlength="50" required style="width:70%; font-size:1.5rem; margin-top: .3rem;">
+                        <input type="text" placeholder="Title" name="title" maxlength="20" title="Please enter a title for the new To Do Item." required >
+                        <input type="text" placeholder="Description" name="desc" maxlength="50" title="Please enter a description for the new To Do Item." required style="margin-top: .3rem;">
                     </div>
                     <div class="flex-item">
-                        <button id= "AddItem" class="Delete" type="submit" name="addToDoItem" value="True">
+                        <button id= "AddItem" type="submit" name="addToDoItem" value="True">
                             Add</br>Item
                         </button>
                     </div>
